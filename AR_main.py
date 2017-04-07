@@ -13,26 +13,46 @@
 import os, numpy
 
 # AR Miner imports
-from AR_parse import AR_parse
+from AR_util import AR_parse, AR_loadReviews, AR_writeReviews
 from AR_reviewInstance import Review
-from AR_emnb import AR_emnb
+from AR_classifier import AR_emnb, AR_svm
 
 # The main method:
 def main():
-
 	# 0. Given the application, read the reviews and stem them
-	datasetName = "facebook"
-	# trainSet/testSet/unlabel: dictionary of {label, reviews} for review data
-	# vocabulary: dictionary len = V and the positional index of each term in the doc vector
-	rmStopWords = False # Removing stop words lead to information loss
+	datasetName = "templerun2"
+	rmStopWords = False # Removing stop words lead to information loss and bad f-score
 	rmRareWords = True
-	trainSet, testSet, unlabelSet, vocabulary = AR_parse(datasetName, rmStopWords, rmRareWords)
 
-	# 1. Use the EM-NB to filter out the informative reviews
-	# informMat: the informative reviews in X x V matrix from, X: documents size, V: vocabulary size
+	# trainSet/testSet/unlabel: dictionary of {label, reviews} for review data
+	# vocabulary: dictionary len = Vand the positional index of each term in the doc vector
+	# set skParse True to directly read of the data that has been filtered out
+	skParse = False
+	if(skParse == False):
+		# the vocabulary is the words on the training set!
+		trainSet, testSet, unlabelSet, vocabulary = AR_parse(datasetName, rmStopWords, rmRareWords)
+
+
+	# 1. Use the EM-NB or SVM to filter out the informative reviews
+	# informMat: the informative reviews in X x V sparse matrix from, X: documents size, V: vocabulary size
 	# informRev: corresponding reviews wrapped as a list of review instances
-	informMat, informRev = AR_emnb(trainSet, testSet, unlabelSet, vocabulary)
+	useSVM = True # SVM is way better than emnb in terms of the testing. 
+				   # But it may not filter out the information effectively
+	if(skParse == False):
+		if(useSVM == False):
+			informRev, informMat = AR_emnb(trainSet, testSet, unlabelSet, vocabulary, datasetName)
+		else:
+			informRev, informMat = AR_svm(trainSet, testSet, unlabelSet, vocabulary, datasetName)
 
+		# write the result back to the file (optional)
+		#AR_writeReviews(informRev, datasetName)
+	else:
+		# directly read from the file
+		informRev, informMat, vocabulary = AR_loadReviews(datasetName)
+
+	print("Number of informative reviews: " + str(len(informRev)))
+
+	# 2. Use the LDA to do the grouping based on the topic
 # call the main
 if __name__ == "__main__":
 	main()
