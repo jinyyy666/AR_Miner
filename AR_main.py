@@ -26,7 +26,7 @@ def main():
 	rmRareWords = True
 
 	# trainSet/testSet/unlabel: lists of review data
-	# vocabulary: dictionary len = Vand the positional index of each term in the doc vector
+	# vocabulary: dictionary len = V and the positional index of each term in the doc vector
 	# set skParse True to directly read of the data that has been filtered out
 	skParse = False
 	if(skParse == False):
