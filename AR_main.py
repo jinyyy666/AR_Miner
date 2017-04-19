@@ -16,6 +16,7 @@ import os, numpy
 from AR_util import AR_parse, AR_loadReviews, AR_writeReviews
 from AR_reviewInstance import Review
 from AR_classifier import AR_emnb, AR_svm
+from AR_lda import AR_lda
 
 # The main method:
 def main():
@@ -24,12 +25,12 @@ def main():
 	rmStopWords = False # Removing stop words lead to information loss and bad f-score
 	rmRareWords = True
 
-	# trainSet/testSet/unlabel: dictionary of {label, reviews} for review data
+	# trainSet/testSet/unlabel: lists of review data
 	# vocabulary: dictionary len = Vand the positional index of each term in the doc vector
 	# set skParse True to directly read of the data that has been filtered out
 	skParse = False
 	if(skParse == False):
-		# the vocabulary is the words on the training set!
+		# the vocabulary is the words on the entire data set!
 		trainSet, testSet, unlabelSet, vocabulary = AR_parse(datasetName, rmStopWords, rmRareWords)
 
 
@@ -53,6 +54,11 @@ def main():
 	print("Number of informative reviews: " + str(len(informRev)))
 
 	# 2. Use the LDA to do the grouping based on the topic
+	# doc_topi : a k*n_topics np matrix, which indicates the probability of each review belongs to one of the topic
+	# vocab_list: a list of vocabulary words
+	n_topics = 20
+	doc_topic, vocab_list = AR_lda(informRev, informMat, vocabulary, n_topics)
+
 # call the main
 if __name__ == "__main__":
 	main()

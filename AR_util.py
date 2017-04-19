@@ -89,15 +89,15 @@ def AR_parse(datasetName, rmStopWords, rmRareWords):
 	# for testing set:
 
 	info = os.path.join(fileTest, "info.txt")
-	cnt = readFile(info, test, 1, {}, wcounter, cnt, rmStopWords)
+	cnt = readFile(info, test, 1, vocabulary, wcounter, cnt, rmStopWords)
 
 	non_info = os.path.join(fileTest, "non-info.txt")
-	cnt = readFile(non_info, test, -1, {}, wcounter, cnt, rmStopWords)
+	cnt = readFile(non_info, test, -1, vocabulary, wcounter, cnt, rmStopWords)
 
 
 	# for unlabeled set:
 	info = os.path.join(fileUnlabel, "unlabeled.txt")
-	cnt = readFile(info, unlabel, 0, {}, wcounter, cnt, rmStopWords)
+	cnt = readFile(info, unlabel, 0, vocabulary, wcounter, cnt, rmStopWords)
 
 	# 2. Remove the rare words (occur only once)
 	if(rmRareWords == True):

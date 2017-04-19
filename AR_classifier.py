@@ -16,6 +16,7 @@
 
 # Python imports:
 import numpy as np
+import sys
 try:
 	from sklearn import svm
 except:
