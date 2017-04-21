@@ -8,8 +8,8 @@ def group_rank(matrix, wg, reviews):
 
         fg = []
         volume = calc_volume(matrix, group_index)
-        fg.append(calc_volume(volume))
-        fg.append(calc_average_rating(matrix, group_index, volume))
+        fg.append(volume)
+        fg.append(calc_average_rating(matrix, group_index, reviews, volume))
 
         for i in xrange(len(fg)):
             curr_score += wg[i] * fg[i]
@@ -23,8 +23,8 @@ def calc_volume(matrix, group_index):
         result += matrix[review_index][group_index]
     return result
 
-def calc_average_rating(matrix, group_index, volume):
-    denominator = 0;
+def calc_average_rating(matrix, group_index, reviews, volume):
+    denominator = 0
     for review_index in xrange(matrix.shape[0]):
         denominator += matrix[review_index][group_index] * reviews[review_index].rating * 1.0
     return volume / denominator
