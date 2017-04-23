@@ -8,7 +8,7 @@ def group_rank(matrix, wg, reviews):
 
         fg = []
         volume = calc_volume(matrix, group_index)
-        fg.append(calc_volume(volume))
+        fg.append(volume)
         fg.append(calc_average_rating(matrix, group_index, reviews, volume))
 
         for i in xrange(len(fg)):
