@@ -15,7 +15,7 @@ def group_rank(matrix, wg, reviews):
             curr_score += wg[i] * fg[i]
         group_scores[group_index] = curr_score
 
-    return group_scores
+    return sorted(group_scores, reverse=True), sorted(range(len(group_scores)), key=lambda k: group_scores[k], reverse=True)
 
 def calc_volume(matrix, group_index):
     result = 0
