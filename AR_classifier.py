@@ -144,7 +144,6 @@ def AR_emnb(trainSet, testSet, unlabelSet, vocabulary, dataSetName):
 """
 The following functions are originally adopted from Mathieu Blondel 
 Modified by Yingyezhe Jin to fit our own need
-We also add the lambda to de-emphasize effect of the unlabel set
 """
 
 def softmax(loga, k=-np.inf, out=None):
@@ -198,7 +197,7 @@ def loglikelihood(td, delta, tdu, p_w_c_log, p_c_log, vocabulary):
 	for d,c in zip(*delta.nonzero()):
 		lik += p_c_log[c] + p_x_c_log[d,c]
 
-	## unlabelled
+	## unlabelled:
 	# log P(x|c)
 	p_x_c_log = np.zeros((Xu,M), np.double)
 	for d in range(len(tdu)):
@@ -427,9 +426,11 @@ def AR_svm(trainSet, testSet, unlabelSet, vocabulary, datasetName):
 
 	# 3. analyze and report the performance (optional)
 	evaluatePerformance(predict, testLabel)
-	# 4. apply emnb to filter out the non-informative reviews
+	# 4. apply svm to filter out the non-informative reviews
 	predict = clf.predict(unlabel)
-
 	informRev, informMat= prepareResult(unlabelSet, predict, vocabulary)
+	# 5. assign the informative prob, for svm, the prob is always 1
+	for r in informRev:
+		r.prob = 1.0
 
 	return informRev, informMat
