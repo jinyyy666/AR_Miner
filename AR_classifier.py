@@ -108,6 +108,16 @@ def prepareResult(unlabelSet, predict, vocabulary):
 
 	return informRev, informMat
 
+# assign the informative probability:
+def assignProb(informRev, prob):
+	predict = prob.argmax(axis=1)
+	ind = 0
+	for i in range(len(predict)):
+		if(predict[i] == 1):
+			informRev[ind].prob = prob[i][1]			
+			ind += 1
+	assert(ind == len(informRev))
+
 # Use EM-Naive Bayes (Semi-supervised learning) for filtering
 def AR_emnb(trainSet, testSet, unlabelSet, vocabulary, dataSetName):
 	assert(bool(vocabulary))
@@ -122,9 +132,12 @@ def AR_emnb(trainSet, testSet, unlabelSet, vocabulary, dataSetName):
 	predict = emnb.predict_all(test, vocabulary)
 	# 3. analyze and report the performance (optional)
 	evaluatePerformance(predict, testLabel)
-	# 4. apply emnb to filter out the non-informative reviews
+	# 4. apply emnb to filter out the non-informative reviews 
 	predict = emnb.predict_all(unlabel, vocabulary) 
 	informRev, informMat= prepareResult(unlabelSet, predict, vocabulary)
+	# 5. assign the prob of informative to each of the review instance:
+	prob = emnb.predict_proba_all(unlabel, vocabulary)
+	assignProb(informRev, prob)
 
 	return informRev, informMat
 

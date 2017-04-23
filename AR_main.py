@@ -38,7 +38,7 @@ def main():
 	# 1. Use the EM-NB or SVM to filter out the informative reviews
 	# informMat: the informative reviews in X x V sparse matrix from, X: documents size, V: vocabulary size
 	# informRev: corresponding reviews wrapped as a list of review instances
-	useSVM = True # SVM is way better than emnb in terms of the testing. 
+	useSVM = False # SVM is way better than emnb in terms of the testing. 
 				   # But it may not filter out the information effectively
 	if(skParse == False):
 		if(useSVM == False):
