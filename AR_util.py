@@ -9,7 +9,7 @@
 # Author: Yingyezhe Jin; Date: Mar. 19, 2017
 
 # python imports
-import os, glob, sys, re, json
+import os, glob, sys, re, json, math
 import numpy as np
 try:
 	from sklearn.feature_extraction import DictVectorizer, FeatureHasher
@@ -52,9 +52,9 @@ cache={}
 st = PorterStemmer()
 
 def stem_cached(token):
-    if token not in cache:
-        cache[token] = st.stem(token)
-    return cache[token]
+	if token not in cache:
+		cache[token] = st.stem(token)
+	return cache[token]
 
 # stop words
 operators = set(('and', 'or', 'not', 'is', 'are'))
@@ -323,3 +323,72 @@ def toCOOMatrix(reviews, vocabulary):
 	rowArr = np.asarray(row)
 	colArr = np.asarray(col)
 	return coo_matrix((dataArr,(rowArr, colArr)), shape=(X, V))
+
+
+# Compute the tf-idf for each review to measure the similarity
+# Input:
+# 		reviews    : a list of informative reviews
+#		vocabulary : the vocabulary of the collection in the dictionary form
+# Output:
+#	    None
+def AR_tfIdf(reviews):
+	tf = {} # term frequency
+	idf = {} # inverse doc frequency
+	total_docs = len(reviews)
+	# 1. Compute the tf and idf
+	for i in range(total_docs):
+		tf[i] ={}
+		r = reviews[i]
+		s = set()
+		for term in r.content:
+
+			# record the # of doc that contain the word first for idf
+			if(not idf.has_key(term)):
+				idf[term] = 0
+			if(term not in s):
+				idf[term] += 1
+				s.add(term)
+
+			# record the the term frequency for each doc
+			if(not tf[i].has_key(term)):
+				tf[i][term] = 0
+			tf[i][term] += 1
+
+	# 2. Calculate the tf-idf
+	for rid, terms in tf.iteritems():
+		summation = 0.0
+		for word, freq in terms.iteritems():
+			tf[rid][word] = (1 + np.log10(freq))*(np.log10(total_docs/float(idf[word])))                
+			summation += tf[rid][word]*tf[rid][word]
+
+		# normalize the tf-idf here:
+		for word, freq in terms.iteritems():
+			tf[rid][word] = tf[rid][word]/math.sqrt(summation)
+
+		reviews[rid].tf_idf = tf[rid] # directly modify the review here
+
+
+
+# Compute the cosine similarity between the two reviews
+# Input:
+#		ri, rj     : the two reviews
+#		thresh	   : the threshold for determining similarity
+# Output:
+#		True/False : if similar or not
+def sim(ri, rj, thresh = 0.3):
+	if(ri.tf_idf == None or rj.tf_idf == None):
+		print("In function::sim of AR_util.py: ")
+		print("Need to run AR_tfIdf to compute the tf-idf first!")
+		sys.exit(-1)
+
+	vi = ri.tf_idf
+	vj = rj.tf_idf
+	score = 0.0
+	for term, value in vi.iteritems():
+		if(vj.has_key(term)):
+			score += vj[term]*value
+
+	if(score > thresh):
+		return True
+	else:
+		return False

@@ -13,10 +13,11 @@
 import os, numpy
 
 # AR Miner imports
-from AR_util import AR_parse, AR_loadReviews, AR_writeReviews
+from AR_util import AR_parse, AR_loadReviews, AR_writeReviews, AR_tfIdf
 from AR_reviewInstance import Review
 from AR_classifier import AR_emnb, AR_svm
 from AR_lda import AR_lda
+from AR_textrank import AR_textrank
 
 # The main method:
 def main():
@@ -59,6 +60,12 @@ def main():
 	n_topics = 20
 	doc_topic, vocab_list = AR_lda(informRev, informMat, vocabulary, n_topics)
 
+	# calculate the tf-idf for the similarity measure between reviews
+	AR_tfIdf(informRev)
+
+	# use the text rank to do the instance ranking:
+	rankedInstance = AR_textrank(doc_topic, informRev)
+	
 # call the main
 if __name__ == "__main__":
 	main()

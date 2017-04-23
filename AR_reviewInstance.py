@@ -29,6 +29,8 @@ class Review:
 		self.vnp = None
 		# doc vector (dict vector):
 		self.vdict = None
+		# tf-idf vector:
+		self.tf_idf = None
 
 	# initialize from reading each review instance from the dataset
 	def fromText(self, id, content, ntokens, rating, label):
@@ -61,7 +63,7 @@ class Review:
 		reviewDict['label'] = self.label
 		reviewDict['vnp'] = self.vnp
 		reviewDict['vdict'] = self.vdict
-
+		reviewDict['tf_idf'] = self.tf_idf
 		return reviewDict
 	# convert the review to the json text
 	def toJsonDict(self):
@@ -74,6 +76,7 @@ class Review:
 		jsonDict['group'] = self.group
 		jsonDict['prob'] = self.prob
 		jsonDict['label'] = self.label
+
 		return jsonDict
 
 	# Remove the terms (rare ones) of the content that are not in the dictionary
@@ -119,5 +122,6 @@ class Review:
 	def printSelf(self):
 		tmp = " ".join(self.content)
 		print("Review id: " + str(self.id) + " Rating: "+ str(self.rating) + " Content: " + tmp + " Ntokens: " + str(self.ntokens) + " TS: " + self.ts + " Group: " + self.group + " Prob: " + str(self.prob) + " label: " + str(self.label) )
-		print(vnp)
-		print(vdict)
+		print(self.vnp)
+		print(self.vdict)
+		print(self.tf_idf)
