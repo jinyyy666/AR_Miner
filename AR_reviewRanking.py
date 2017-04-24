@@ -3,45 +3,58 @@ import operator
 
 prop_threshold = 0.01
 sim_threshold = 0.6
-n_topics = 20
-topic_revs = defaultdict(list)
-topic_revs_prop = defaultdict(dict)
-topic_revs_rating = defaultdict(dict) 
-topic_revs_duplic = defaultdict(dict)
-topic_revs_probab = defaultdict(dict)
-updated_topic_revs_prop = defaultdict(dict)
-updated_topic_revs_rating = defaultdict(dict) 
-updated_topic_revs_probab = defaultdict(dict)
+topics_num = 20
+# topic_revs = defaultdict(list)
+# topic_revs_prop = defaultdict(dict)
+# topic_revs_rating = defaultdict(dict) 
+# topic_revs_duplic = defaultdict(dict)
+# topic_revs_probab = defaultdict(dict)
+# updated_topic_revs_prop = defaultdict(dict)
+# updated_topic_revs_rating = defaultdict(dict) 
+# updated_topic_revs_probab = defaultdict(dict)
 
 def group_revs(doc_topic):
-	global topic_revs
-	
+	topic_revs = defaultdict(list)
+
 	for i in range(len(doc_topic)):
-		for j in range(n_topics):
+		for j in range(topics_num):
 			if doc_topic[i][j] >= prop_threshold:
 				topic_revs[j].append(i)
-	for j in len(topic_revs):
-		print(len(topic_revs[j]))
+
+	# for j in range(len(topic_revs)):
+	# 	print len(topic_revs[j])
+	return topic_revs
 
 def rev_prop(doc_topic):
-	global topic_revs_prop
-	
+	topic_revs_prop = defaultdict(dict)
+	topic_revs = group_revs(doc_topic)
+
 	for topic in topic_revs:
 		for rev_idx in topic_revs[topic]:
 			topic_revs_prop[topic][rev_idx] = doc_topic[rev_idx][topic]
+	return topic_revs_prop
 
-def rev_rating(informRev):
-	global topic_revs_rating
+def rev_rating(doc_topic, informRev):
+	topic_revs_rating = defaultdict(dict) 
+	topic_revs = group_revs(doc_topic)
 	
 	for topic in topic_revs:
 		for rev_idx in topic_revs[topic]:
 			topic_revs_rating[topic][rev_idx] = 1/float(informRev[rev_idx].rating)
+	return topic_revs_rating
 
-def rev_probab():
+def rev_probab(doc_topic, informRev):
 	"""
 	calculating review instance posterior probability through EMNB
 	"""
-	global topic_revs_probab
+	topic_revs_probab = defaultdict(dict)
+	topic_revs = group_revs(doc_topic)
+	
+	for topic in topic_revs:
+		for rev_idx in topic_revs[topic]:
+			topic_revs_probab[topic][rev_idx] = informRev[rev_idx].prob
+	return topic_revs_probab
+
 
 def JaccardSimilarity(x, y):    
 	intersection_cardinality = len(set.intersection(*[set(x), set(y)]))
@@ -52,8 +65,15 @@ def JaccardSimilarity(x, y):
 		jaccard=intersection_cardinality/union_cardinality
 		return jaccard
 	
-def rev_duplic(informRev): 
-	global updated_topic_revs_prob, updated_topic_revs_rating, updated_topic_revs_probab
+def rev_duplic(doc_topic, informRev): 
+	topic_revs_duplic = defaultdict(dict)
+	updated_topic_revs_prop = defaultdict(dict)
+	updated_topic_revs_rating = defaultdict(dict)
+	updated_topic_revs_probab = defaultdict(dict)
+	topic_revs = group_revs(doc_topic)
+	topic_revs_prop = rev_prop(doc_topic)
+	topic_revs_rating = rev_rating(doc_topic, informRev)
+	topic_revs_probab = rev_probab(doc_topic, informRev)
 	
 	for topic in topic_revs:  
 		rev_simRevs = defaultdict(list)
@@ -76,32 +96,30 @@ def rev_duplic(informRev):
 			if not rev_simRevs[rev_key]:
 				updated_topic_revs_prop[topic][rev_key] = topic_revs_prop[topic][rev_key]
 				updated_topic_revs_rating[topic][rev_key] = topic_revs_rating[topic][rev_key]
-				# updated_topic_revs_probab[topic][rev_key] = topic_revs_probab[topic][rev_key]
+				updated_topic_revs_probab[topic][rev_key] = topic_revs_probab[topic][rev_key]
 			rev_simRevs[rev_key].append(rev_key)
 			dupli_prop_dict = dict((rev_dupli, topic_revs_prop[topic][rev_dupli]) for rev_dupli in rev_simRevs[rev_key])
 			dupli_rating_dict = dict((rev_dupli, 1/float(informRev[rev_dupli].rating)) for rev_dupli in rev_simRevs[rev_key])
-#             dupli_probab_dict = dict((rev_dupli, topic_revs_probab[topic][rev_dupli]) for rev_dupli in rev_simRevs[rev_key])
+			dupli_probab_dict = dict((rev_dupli, topic_revs_probab[topic][rev_dupli]) for rev_dupli in rev_simRevs[rev_key])
 			maxKeyProp = max(dupli_prop_dict.iteritems(), key=operator.itemgetter(1))[0]
 			maxKeyRating = max(dupli_rating_dict.iteritems(), key=operator.itemgetter(1))[0]
-#             maxKeyProbab = max(dupli_probab_dict.iteritems(), key=operator.itemgetter(1))[0]
+			maxKeyProbab = max(dupli_probab_dict.iteritems(), key=operator.itemgetter(1))[0]
 			updated_topic_revs_prop[topic][rev_key] = dupli_prop_dict[maxKeyProp]
 			updated_topic_revs_rating[topic][rev_key] = dupli_rating_dict[maxKeyRating]
-#             updated_topic_revs_probab[topic][rev_key] = dupli_probab_dict[maxKeyProbab]
+			updated_topic_revs_probab[topic][rev_key] = dupli_probab_dict[maxKeyProbab]
+
+	return topic_revs_duplic, updated_topic_revs_prop, updated_topic_revs_rating, updated_topic_revs_probab
 	
 def instance_ranking(doc_topic, weight, informRev):
-	group_revs(doc_topic)
-	rev_prop(doc_topic)
-	rev_rating(informRev)
-#     rev_probab()
-	rev_duplic(informRev)
+	topic_revs_duplic, updated_topic_revs_prop, updated_topic_revs_rating, updated_topic_revs_probab = rev_duplic(doc_topic, informRev)
 	topic_revs_top10Rank = defaultdict(dict)    
 	for topic in topic_revs_duplic:
 		rev_importanceScore_dict = {}
 		for key in topic_revs_duplic[topic].keys():
 			rev_importanceScore_dict[key] = weight[0] * updated_topic_revs_prop[topic][key] + \
 											weight[1] * topic_revs_duplic[topic][key] + \
-											weight[2] * updated_topic_revs_rating[topic][key]
-#                                          + weight[3] * updated_topic_revs_probab[topic][key]
+											weight[2] * updated_topic_revs_rating[topic][key] + \
+											weight[3] * updated_topic_revs_probab[topic][key]
 		top10_rev_importanceScore = sorted(rev_importanceScore_dict.items(), key=operator.itemgetter(1))[::-1][:10]
 		topic_revs_top10Rank[topic] = top10_rev_importanceScore
 	return topic_revs_top10Rank
