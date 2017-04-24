@@ -4,14 +4,6 @@ import operator
 prop_threshold = 0.01
 sim_threshold = 0.6
 topics_num = 20
-# topic_revs = defaultdict(list)
-# topic_revs_prop = defaultdict(dict)
-# topic_revs_rating = defaultdict(dict) 
-# topic_revs_duplic = defaultdict(dict)
-# topic_revs_probab = defaultdict(dict)
-# updated_topic_revs_prop = defaultdict(dict)
-# updated_topic_revs_rating = defaultdict(dict) 
-# updated_topic_revs_probab = defaultdict(dict)
 
 def group_revs(doc_topic):
 	topic_revs = defaultdict(list)
@@ -20,9 +12,6 @@ def group_revs(doc_topic):
 		for j in range(topics_num):
 			if doc_topic[i][j] >= prop_threshold:
 				topic_revs[j].append(i)
-
-	# for j in range(len(topic_revs)):
-	# 	print len(topic_revs[j])
 	return topic_revs
 
 def rev_prop(doc_topic):
