@@ -20,6 +20,8 @@ def group_revs(doc_topic):
 		for j in range(n_topics):
 			if doc_topic[i][j] >= prop_threshold:
 				topic_revs[j].append(i)
+	for j in len(topic_revs):
+		print(len(topic_revs[j]))
 
 def rev_prop(doc_topic):
 	global topic_revs_prop
