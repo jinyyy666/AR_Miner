@@ -1,17 +1,25 @@
+# Author : Shanshan Li
+
+# python imports
 from collections import defaultdict
 import operator
 
-prop_threshold = 0.01
+# AR Miner imports
+from AR_util import sim
+
+prop_threshold = 0.2 # can be changed to larger value to save time , used to be 0.01
 sim_threshold = 0.6
-topics_num = 20
+
+cache_sim = defaultdict(dict)
 
 def group_revs(doc_topic):
 	topic_revs = defaultdict(list)
 
 	for i in range(len(doc_topic)):
-		for j in range(topics_num):
+		for j in range(len(doc_topic[i])):
 			if doc_topic[i][j] >= prop_threshold:
 				topic_revs[j].append(i)
+
 	return topic_revs
 
 def rev_prop(doc_topic):
@@ -44,14 +52,32 @@ def rev_probab(doc_topic, informRev):
 			topic_revs_probab[topic][rev_idx] = informRev[rev_idx].prob
 	return topic_revs_probab
 
+# cached similarity measure for td-idf
+def cachedSim(r1, r2):
+	x_id = r1.id
+	y_id = r2.id
+	ret = -1
+	if(cache_sim.has_key(x_id)):
+		if(cache_sim[x_id].has_key(y_id)):
+			ret =  cache_sim[x_id][y_id]
+	else:
+		cache_sim[x_id][y_id] = sim(r1, r2)
+		ret = cache_sim[x_id][y_id]
+	return ret
 
-def JaccardSimilarity(x, y):    
+# cached jaccard, seems to be very  slow
+def JaccardSimilarity(x, y, x_id, y_id):   
+	if(cache_sim.has_key(x_id)):
+		if(cache_sim[x_id].has_key(y_id)):
+			return cache_sim[x_id][y_id]
 	intersection_cardinality = len(set.intersection(*[set(x), set(y)]))
+	
 	union_cardinality = len(set.union(*[set(x), set(y)]))
 	if union_cardinality==0:
 		return 0.0
 	else:
 		jaccard=intersection_cardinality/union_cardinality
+		cache_sim[x_id][y_id] = jaccard
 		return jaccard
 	
 def rev_duplic(doc_topic, informRev): 
@@ -66,18 +92,23 @@ def rev_duplic(doc_topic, informRev):
 	
 	for topic in topic_revs:  
 		rev_simRevs = defaultdict(list)
+		print("Length of " + str(topic) + "th topic has reviews: " + str(len(topic_revs[topic])))
 		for i in range(len(topic_revs[topic])):
+			#print("For " + str(i) + "th review: ")
 			rev_idx1 = topic_revs[topic][i]
 			if rev_simRevs:
 				for key in rev_simRevs.keys():
 					if rev_idx1 in rev_simRevs[key]:
 						continue      
 			VS1 = informRev[rev_idx1].content
+			VS1_id = informRev[rev_idx1].id
 			rev_simRevs[rev_idx1] = []
 			for j in range(i+1,len(topic_revs[topic])):                
 				rev_idx2 = topic_revs[topic][j]                
 				VS2 = informRev[rev_idx2].content
-				textSim = JaccardSimilarity(VS1, VS2)
+				VS2_id = informRev[rev_idx2].id
+				textSim = cachedSim(informRev[rev_idx1], informRev[rev_idx2]) # better than jaccard
+				#textSim = JaccardSimilarity(VS1, VS2, VS1_id, VS2_id)
 				if textSim >= sim_threshold:
 					rev_simRevs[rev_idx1].append(rev_idx2)
 		for rev_key in rev_simRevs.keys():
