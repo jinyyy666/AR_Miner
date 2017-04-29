@@ -32,13 +32,15 @@ def AR_lda(informRev, informMat, vocabulary, n_topics):
 	#print(vocab_list)
 
 	topic_word = model.topic_word_
+	top_words_list = []
 	n_top_words = 8
 	# print for illustration
 	for i, topic_dist in enumerate(topic_word):
 		topic_words = np.array(vocab_list)[np.argsort(topic_dist)][:-n_top_words:-1]
+		top_words_list.append(topic_words)
 		print('Topic {}: {}'.format(i, ' '.join(topic_words)))
 
 	doc_topic = model.doc_topic_
-	return doc_topic, vocab_list
+	return doc_topic, vocab_list, top_words_list
 
 

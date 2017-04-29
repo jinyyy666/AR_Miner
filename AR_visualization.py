@@ -5,6 +5,7 @@ from matplotlib.path import Path
 from matplotlib.spines import Spine
 from matplotlib.projections.polar import PolarAxes
 from matplotlib.projections import register_projection
+from nltk.corpus import stopwords
 
 
 def radar_factory(num_vars, frame='circle'):
@@ -95,3 +96,40 @@ def unit_poly_verts(theta):
     x0, y0, r = [0.5] * 3
     verts = [(r*np.cos(t) + x0, r*np.sin(t) + y0) for t in theta]
     return verts
+
+def plot_group_ranking(group_scores, sorted_group_indices, top_words_list, group_count):
+    theta = radar_factory(group_count, frame='polygon')
+
+    key_words_list = generate_key_words(top_words_list)
+
+    columns = ('Rank', 'Score', 'Key words')
+    cell_text = []
+    for i in xrange(group_count):
+        cell_text.append([i + 1, group_scores[sorted_group_indices[i]], key_words_list[sorted_group_indices[i]]])
+
+    fig = plt.figure()
+    fig.set_size_inches(7, 7)
+    ax = fig.add_subplot(1, 1, 1, projection='radar')
+    ax.set_title('Group scores', weight='bold', size='large', position=(1, 1), horizontalalignment='center', verticalalignment='center')
+    ax.plot(theta, group_scores[0:group_count], color='k')
+    ax.set_varlabels(sorted_group_indices[0:group_count])
+    table = ax.table(cellText=cell_text, colLabels=columns, colWidths = [0.05, 0.3, 0.5], loc='bottom', bbox=[0, -0.6, 1.5, 0.5])
+    table.set_fontsize(20)
+    table.scale(3, 3)
+    plt.show()
+
+def generate_key_words(top_words_list):
+    stop_words = set(stopwords.words('english'))
+
+    key_words_list = []
+    for top_words in top_words_list:
+        key_words = ''
+
+        for word in top_words:
+            if word not in stop_words:
+                key_words += ' '
+                key_words += word
+
+        key_words_list.append(key_words)
+
+    return key_words_list

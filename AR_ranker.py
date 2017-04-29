@@ -24,7 +24,7 @@ def calc_volume(matrix, group_index):
     return result
 
 def calc_average_rating(matrix, group_index, reviews, volume):
-    denominator = 0;
+    denominator = 0
     for review_index in xrange(matrix.shape[0]):
         denominator += matrix[review_index][group_index] * reviews[review_index].rating * 1.0
     return volume / denominator
