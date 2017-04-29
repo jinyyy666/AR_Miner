@@ -57,8 +57,16 @@ def stem_cached(token):
 	return cache[token]
 
 # stop words
-operators = set(('and', 'or', 'not', 'is', 'are'))
-stopWords = set(stopwords.words("english")) - operators
+#operators = set(('and', 'or', 'not', 'is', 'are'))
+stopWords = set(stopwords.words("english"))# - operators
+
+# determine if a string is a integer
+def representsInt(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
 
 # read the dataset
 # @param: the name of the dataset
@@ -99,11 +107,11 @@ def AR_parse(datasetName, rmStopWords, rmRareWords):
 	info = os.path.join(fileUnlabel, "unlabeled.txt")
 	cnt = readFile(info, unlabel, 0, vocabulary, wcounter, cnt, rmStopWords)
 
-	# 2. Remove the rare words (occur only once)
+	# 2. Remove the rare words (occur only once) and integer 
 	if(rmRareWords == True):
 		newVoc = {}
 		for term, index in vocabulary.items():
-			if(wcounter[term] > 1):
+			if(wcounter[term] > 1 and not representsInt(term) ):
 				newVoc[term] = len(newVoc)
 
 	else:
@@ -197,6 +205,7 @@ def readFile(filename, dataset, label, voc, wcounter, cnt, rmStopWords):
 			parts = instance.split(' ')		
 			r = parts[1] # like: ratingone
 			rating = rating2int[r[6:]]
+			
 			text = " ".join(parts[2:]) # like: blabla blabla...
 			
 			# case-folding
@@ -204,6 +213,8 @@ def readFile(filename, dataset, label, voc, wcounter, cnt, rmStopWords):
 			text = text.lower()
 			# remove the non-alpha-number words
 			tokens = re.findall(r'\w+', text)
+			raw_text = " ".join(tokens)
+
 			content = []
 			# stem the content and remove stop words:
 			for t in tokens:
@@ -222,7 +233,7 @@ def readFile(filename, dataset, label, voc, wcounter, cnt, rmStopWords):
 			ntokens = len(content)
 
 			review = Review()
-			review.fromText(cnt, content, ntokens, rating, label)
+			review.fromText(cnt, content, ntokens, rating, label, raw_text)
 			# For debugging:
 			#review.printSelf()
 			dataset.append(review)

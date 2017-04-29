@@ -21,7 +21,7 @@ except:
 # return the doc_topic matrix and the vocabulary as a list
 def AR_lda(informRev, informMat, vocabulary, n_topics):
 	# apply the LDA
-	model = lda.LDA(n_topics, n_iter=1500, random_state=1, refresh=500)
+	model = lda.LDA(n_topics, n_iter=1000, random_state=1, refresh=500)
 	model.fit(informMat)
 
 	sorted_vocab = sorted(vocabulary.items(), key=operator.itemgetter(1))

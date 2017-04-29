@@ -23,7 +23,7 @@ from AR_textrank import AR_textrank
 def main():
 	# 0. Given the application, read the reviews and stem them
 	datasetName = "templerun2"
-	rmStopWords = False # Removing stop words lead to information loss and bad f-score
+	rmStopWords = True # Removing stop words lead to information loss and bad f-score
 	rmRareWords = True
 
 	# trainSet/testSet/unlabel: lists of review data

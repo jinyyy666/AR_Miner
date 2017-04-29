@@ -13,6 +13,8 @@ class Review:
 		self.id = -1
 		# the review content, as a list
 		self.content = []
+		# the review raw text, as a string
+		self.text = None
 		# rating of this review (1-5):
 		self.rating = -1
 		# number of tokens in the review:
@@ -33,9 +35,10 @@ class Review:
 		self.tf_idf = None
 
 	# initialize from reading each review instance from the dataset
-	def fromText(self, id, content, ntokens, rating, label):
+	def fromText(self, id, content, ntokens, rating, label, raw_text):
 		self.id = id
 		self.content = content
+		self.text = raw_text
 		self.ntokens = ntokens
 		self.rating = rating
 		self.label = label
@@ -43,6 +46,7 @@ class Review:
 	def fromJson(self, jsonDict):
 		self.id = jsonDict['id']
 		self.content = jsonDict['content']
+		self.text = jsonDict['text']
 		self.ntokens = jsonDict['ntokens']
 		self.rating = jsonDict['rating']
 		self.label = jsonDict['label']
@@ -55,6 +59,7 @@ class Review:
 		reviewDict = {}
 		reviewDict['id'] = self.id
 		reviewDict['content'] = self.content
+		reviewDict['text'] = self.text
 		reviewDict['rating'] = self.rating
 		reviewDict['ntokens'] = self.ntokens
 		reviewDict['ts'] = self.ts
@@ -70,6 +75,7 @@ class Review:
 		jsonDict = {}
 		jsonDict['id'] = self.id
 		jsonDict['content'] = self.content
+		jsonDict['text'] = self.text
 		jsonDict['rating'] = self.rating
 		jsonDict['ntokens'] = self.ntokens
 		jsonDict['ts'] = self.ts
@@ -122,6 +128,7 @@ class Review:
 	def printSelf(self):
 		tmp = " ".join(self.content)
 		print("Review id: " + str(self.id) + " Rating: "+ str(self.rating) + " Content: " + tmp + " Ntokens: " + str(self.ntokens) + " TS: " + self.ts + " Group: " + self.group + " Prob: " + str(self.prob) + " label: " + str(self.label) )
+		print("Raw text: " + str(self.text))
 		print(self.vnp)
 		print(self.vdict)
 		print(self.tf_idf)
