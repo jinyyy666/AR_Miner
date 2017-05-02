@@ -98,14 +98,17 @@ def unit_poly_verts(theta):
     return verts
 
 def plot_group_ranking(group_scores, sorted_group_indices, top_words_list, group_count):
+    """
+    This function takes in the group rankings, indices, and their corresponding keywords and plots a radar chart and a table
+    """
     theta = radar_factory(group_count, frame='polygon')
 
     key_words_list = generate_key_words(top_words_list)
 
-    columns = ('Rank', 'Score', 'Key words')
+    columns = ('Rank', 'Group index', 'Score', 'Key words')
     cell_text = []
     for i in xrange(group_count):
-        cell_text.append([i + 1, group_scores[sorted_group_indices[i]], key_words_list[sorted_group_indices[i]]])
+        cell_text.append([i + 1, sorted_group_indices[i], group_scores[i], key_words_list[sorted_group_indices[i]]])
 
     fig = plt.figure()
     fig.set_size_inches(7, 7)
@@ -113,12 +116,16 @@ def plot_group_ranking(group_scores, sorted_group_indices, top_words_list, group
     ax.set_title('Group scores', weight='bold', size='large', position=(1, 1), horizontalalignment='center', verticalalignment='center')
     ax.plot(theta, group_scores[0:group_count], color='k')
     ax.set_varlabels(sorted_group_indices[0:group_count])
-    table = ax.table(cellText=cell_text, colLabels=columns, colWidths = [0.05, 0.3, 0.5], loc='bottom', bbox=[0, -0.6, 1.5, 0.5])
-    table.set_fontsize(20)
-    table.scale(3, 3)
+    table = ax.table(cellText=cell_text, colLabels=columns, colWidths = [0.6, 2.0, 3.0, 10.0], loc='bottom', bbox=[0, -0.6, 1.5, 0.5])
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
     plt.show()
 
 def generate_key_words(top_words_list):
+    """
+    :param top_words_list: 
+    :return: a list of keywords that does not contain stop words
+    """
     stop_words = set(stopwords.words('english'))
 
     key_words_list = []
