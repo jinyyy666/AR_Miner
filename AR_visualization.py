@@ -99,7 +99,7 @@ def unit_poly_verts(theta):
 
 def plot_group_ranking(group_scores, sorted_group_indices, top_words_list, group_count):
     """
-    This function takes in the group rankings, indices, and their corresponding keywords and plots a radar chart and a table
+    This function plots a radar chart and a table with the keywords and scores of each group
     """
     theta = radar_factory(group_count, frame='polygon')
 
@@ -116,9 +116,35 @@ def plot_group_ranking(group_scores, sorted_group_indices, top_words_list, group
     ax.set_title('Group scores', weight='bold', size='large', position=(1, 1), horizontalalignment='center', verticalalignment='center')
     ax.plot(theta, group_scores[0:group_count], color='k')
     ax.set_varlabels(sorted_group_indices[0:group_count])
-    table = ax.table(cellText=cell_text, colLabels=columns, colWidths = [0.6, 2.0, 3.0, 10.0], loc='bottom', bbox=[0, -0.6, 1.5, 0.5])
+    table = ax.table(cellText=cell_text, colLabels=columns, colWidths=[0.6, 2.0, 3.0, 10.0], loc='bottom', bbox=[0, -0.6, 1.5, 0.5])
     table.auto_set_font_size(False)
     table.set_fontsize(10)
+    plt.show()
+
+def plot_instance_ranking(group_index, reviews, review_scores, instance_count):
+    """
+    
+    :param group_index: the index of the group that ranks top
+    :param reviews: the entire review list
+    :param review_scores: a matrix where the element on the ith row and jth col is the index and score of the review instance that ranks the jth highest in the ith group
+    :param instance_count: the number of highest ranked review instances
+    :return: plots a table of the top instances in the current group with their contents and scores
+    """
+
+    cell_text = []
+    for i in xrange(instance_count):
+        cell_text.append([i + 1, reviews[review_scores[group_index][i][0]].text, review_scores[group_index][i][1]])
+
+    fig = plt.figure()
+    fig.set_size_inches(7, 7)
+    ax = fig.add_subplot(1, 1, 1, frame_on=False)
+    ax.xaxis.set_visible(False)
+    ax.yaxis.set_visible(False)
+    table = ax.table(colLabels=('Rank', 'Review instance', 'Score'), cellText=cell_text, loc='top', colWidths=[0.6, 7.0, 0.8])
+    table.auto_set_font_size(False)
+    table.set_fontsize(30)
+    table.scale(1, 8)
+    fig.text(.5, .5, 'Top instances of the ' + str(group_index) + "th group", fontsize=50)
     plt.show()
 
 def generate_key_words(top_words_list):
