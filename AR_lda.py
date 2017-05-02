@@ -19,7 +19,7 @@ except:
 # Given the review instances in both list and sparse matrix form
 # Note here that the vocabulary is in a dictionary form
 # return the doc_topic matrix and the vocabulary as a list
-def AR_lda(informRev, informMat, vocabulary, n_topics):
+def AR_lda(informMat, vocabulary, n_topics):
 	# apply the LDA
 	model = lda.LDA(n_topics, n_iter=1000, random_state=1, refresh=500)
 	model.fit(informMat)
