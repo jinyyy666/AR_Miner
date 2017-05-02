@@ -1,5 +1,5 @@
 # AR_Miner
-Our implementation of the text miner for app reviews. Please see the original paper [AR_Mine](http://dl.acm.org/citation.cfm?id=2568263). 
+Our implementation of the text miner for app reviews. Please see the original paper [AR_Miner](http://dl.acm.org/citation.cfm?id=2568263). 
 
 ## Getting Started
 
