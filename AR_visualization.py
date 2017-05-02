@@ -115,7 +115,7 @@ def plot_group_ranking(group_scores, sorted_group_indices, top_words_list, group
     ax = fig.add_subplot(1, 1, 1, projection='radar')
     ax.set_title('Group scores', weight='bold', size='large', position=(1, 1), horizontalalignment='center', verticalalignment='center')
     ax.plot(theta, group_scores[0:group_count], color='k')
-    ax.set_varlabels(sorted_group_indices[0:group_count])
+    ax.set_varlabels(['keyboard theme', 'add theme', 'default time set', 'person dictionary', 'Chinese Japanese', 'word type', 'close button', 'jelly bean', 'punctuate predict', 'auto correct'])
     table = ax.table(cellText=cell_text, colLabels=columns, colWidths=[0.6, 2.0, 3.0, 10.0], loc='bottom', bbox=[0, -0.6, 1.5, 0.5])
     table.auto_set_font_size(False)
     table.set_fontsize(10)
