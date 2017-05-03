@@ -1,5 +1,6 @@
 # AR_Miner
-Our implementation of the text miner for app reviews. Please see the original paper [AR_Miner](http://dl.acm.org/citation.cfm?id=2568263). 
+
+## Video: https://youtu.be/bHjNEZsD5As
 
 ## Getting Started
 
@@ -35,8 +36,4 @@ Go to your python interactive model, type:
 
 for install the nltk corpus to import stopwords
 
-
-## Demo Video
-
-Here is the link for our demo video:
-xxxxx
+Our implementation of the text miner for app reviews. Please see the original paper [AR_Miner](http://dl.acm.org/citation.cfm?id=2568263). 
