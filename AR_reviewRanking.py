@@ -92,7 +92,7 @@ def rev_duplic(doc_topic, informRev):
 	
 	for topic in topic_revs:  
 		rev_simRevs = defaultdict(list)
-		print("Length of " + str(topic) + "th topic has reviews: " + str(len(topic_revs[topic])))
+		print(str(topic) + "th topic has reviews: " + str(len(topic_revs[topic])))
 		for i in range(len(topic_revs[topic])):
 			#print("For " + str(i) + "th review: ")
 			rev_idx1 = topic_revs[topic][i]

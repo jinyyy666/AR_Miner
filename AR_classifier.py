@@ -100,7 +100,7 @@ def prepareResult(unlabelSet, predict, vocabulary):
 
 	for i in range(len(predict)):
 		if(predict[i] == 1):
-			assert(unlabelSet[i].label == 0)
+			#assert(unlabelSet[i].label == 0)
 			unlabelSet[i].label = 1 # mark as informative
 			informRev.append(unlabelSet[i])
 
@@ -277,7 +277,7 @@ class SemiNB(object):
 
 		return self.get_model()
 
-	def train_semi(self, td, delta, tdu, vocabulary, maxiter=100, eps=0.01):
+	def train_semi(self, td, delta, tdu, vocabulary, maxiter=50, eps=0.01):
 		"""
 		td: X x V term document matrix
 		delta: X x M label matrix
