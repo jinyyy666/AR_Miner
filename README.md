@@ -47,7 +47,12 @@ Make sure to git clone the entire repo into your local directory and install the
 
 The notebook is used as a demo/report for our project. We import the code into the notebook. 
 
-The main flow of our notebook cells are : 1) NLP Based Preprocessing; 2) Naive Bayes/SVM Based Filtering; 3) LDA topic clustering; 4) Ranking algorithms for importance
+The main code flow of our notebook includes : 
+
+1) NLP Based Preprocessing; 
+2) Naive Bayes/SVM Based Filtering; 
+3) LDA topic clustering; 
+4) Ranking algorithms for importance
 
 ### Dataset
 
